@@ -19,7 +19,7 @@ const articleParser = new mongoose.Schema({
 const Article = mongoose.model("Article", articleParser);
 
 
-
+// Request targeting all articles
 app.route("/articles")
 
 .get((req, res) => {
@@ -52,6 +52,51 @@ app.route("/articles")
     })
 });
 
+
+// Request targeting specific article
+app.route("/articles/:articleTitle")
+
+.get((req, res) => {
+    Article.findOne({title: req.params.articleTitle}, (err, foundArticle) => {
+        if (foundArticle) {
+            res.send(foundArticle);
+        } else {
+            res.send("No articles matching that title was found.");
+        }
+    });
+})
+
+.put((req, res) => {
+    Article.replaceOne(
+        {title: req.params.articleTitle},
+        req.body,
+        function(err) {
+            if (!err) {
+                res.send("Successfully updated article");
+            }
+        }
+    );
+})
+
+.patch((req, res) => {
+    Article.updateOne(
+        {title: req.params.articleTitle},
+        req.body,
+        function(err) {
+            if (!err) {
+                res.send("Successfully updated article");
+            }
+        }
+    );
+})
+
+.delete((req, res) => {
+    Article.deleteOne({title: req.params.title}, function(err) {
+        if (!err) {
+            res.send("Successfully deleted article");
+        }
+    });
+});
 
 
 app.listen(3000, function() {
